@@ -23,6 +23,7 @@ ifndef IIB_ID
 endif
 	@. scripts/mirror-iib-to-quay.sh
 
+# Copy the registry credential info to the cluster secret.
 set-registry-credentials:
 	@. scripts/set-registry-credentials.sh
 
