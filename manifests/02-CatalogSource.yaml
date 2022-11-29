@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: iib-${QUAY_USER}
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: quay.io/${QUAY_USER}/iib:${IIB_ID}
+  displayName: iib-${QUAY_USER}
+  publisher: GitOps Team
+
