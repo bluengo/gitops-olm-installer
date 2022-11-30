@@ -9,13 +9,15 @@
 source "scripts/common.sh"
 
 ## TRAP
-trap '{ rm -f "${oldauth}" "${newauth}"; trap_exit ${BASH_SOURCE} ${?}; }' EXIT SIGINT SIGTERM
+trap '{ trap_exit ${BASH_SOURCE} ${?}; }' EXIT SIGINT SIGTERM
 trap 'trap_err ${?} ${LINENO} ${BASH_LINENO} ${BASH_COMMAND} $(printf "::%s" ${FUNCNAME[@]:-})' ERR
 
 ## Variables
 needed_commands=("oc" "podman" "jq" "tr")
-oldauth=$(mktemp)
-newauth=$(mktemp)
+TMPDIR=$(mktemp -d)
+oldauth=$(mktemp -p "${TMPDIR}")
+newauth=$(mktemp -p "${TMPDIR}")
+docker_config="${DOCKER_CONFIG:-${HOME}/.docker/config.json}"
 #########################################
 
 ## RUN
@@ -51,7 +53,7 @@ log_info "Getting current login information from the cluster secret"
 log_info "Copying brew credentials from your config.json file"
 {
   brew_secret=$(jq '.auths."brew.registry.redhat.io".auth' \
-                      "${HOME}/.docker/config.json" \
+                      "${docker_config}" \
                       | tr -d '"')
 } || {
   exit_on_err 4 "Something went wrong when trying to get your Brew login info"
@@ -78,3 +80,4 @@ log_info "Pushing the updated information back to the secret"
 } 
 
 log_ok "Your brew registry access token has been added to the cluster"
+
