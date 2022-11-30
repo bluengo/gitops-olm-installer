@@ -15,7 +15,7 @@ trap 'trap_err ${?} ${LINENO} ${BASH_LINENO} ${BASH_COMMAND} $(printf "::%s" ${F
 ## Variables
 needed_commands=("oc" "envsubst")
 needed_vars=("IIB_ID" "QUAY_USER" "GITOPS_VERSION")
-#####################################################
+###################################################
 
 ##RUN
 log_info "Checking dependencies"
