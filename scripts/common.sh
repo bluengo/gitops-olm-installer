@@ -19,30 +19,27 @@ timestamp()
   date --utc '+%Y-%m-%d %H:%M:%S UTC - '
 }
 
-# Create a temporary log file if not set.
-LOGFILE=${LOGFILE:-$(mktemp)}
-
 log_ok()
 {
   # Prints the timestamp with a green [OK] followed by the message ($1)
-  echo -e "$(timestamp)${GRN}[OK]:${RST} ${1}" | tee -a "${LOGFILE}"
+  echo -e "$(timestamp)${GRN}[OK]:${RST} ${1}"
 }
 
 log_info() {
   # Prints the timestamp with [INFO] followed by the message ($1)
-  echo -e "$(timestamp)[INFO]: ${1}" | tee -a "${LOGFILE}"
+  echo -e "$(timestamp)[INFO]: ${1}"
 }
 
 log_warn()
 {
   # Prints the timestamp with a yellow [WARNING] followed by the message ($1)
-  echo -e "$(timestamp)${YLW}[WARNING]:${RST} ${1}" | tee -a "${LOGFILE}"
+  echo -e "$(timestamp)${YLW}[WARNING]:${RST} ${1}"
 }
 
 log_err()
 {
   # Prints the timestamp with a red [ERROR] followed by the message ($1)
-  echo -e "$(timestamp)${RED}[ERROR]:${RST} ${1}" | tee -a "${LOGFILE}"
+  echo -e "$(timestamp)${RED}[ERROR]:${RST} ${1}"
 }
 
 exit_on_err()
