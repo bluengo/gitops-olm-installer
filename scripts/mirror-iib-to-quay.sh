@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Install GitOps operator using OLM from a custom IIB
+# Mirror IIB image to make it available for OCP cluster.
 
 ## Import common
 #  This script is intended to be called from the 
