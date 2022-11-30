@@ -77,7 +77,7 @@ check_dependencies()
 ## TRAP for graceful exit.
 trap_exit()
 {
-  log_info "Exited '${BASH_SOURCE}' with status ${1}"
+  log_info "Exited '${1}' with status ${2}"
   rm -rf "${TMPDIR}"
 }
 

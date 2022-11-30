@@ -9,7 +9,7 @@
 source "scripts/common.sh"
 
 ## TRAP
-trap '{ rm -f "${oldauth}" "${newauth}"; trap_exit ${?}; }' EXIT SIGINT SIGTERM
+trap '{ rm -f "${oldauth}" "${newauth}"; trap_exit ${BASH_SOURCE} ${?}; }' EXIT SIGINT SIGTERM
 trap 'trap_err ${?} ${LINENO} ${BASH_LINENO} ${BASH_COMMAND} $(printf "::%s" ${FUNCNAME[@]:-})' ERR
 
 ## Variables

@@ -9,7 +9,7 @@
 source "scripts/common.sh"
 
 ## TRAP
-trap 'trap_exit ${?}' EXIT SIGINT SIGTERM
+trap 'trap_exit ${BASH_SOURCE} ${?}' EXIT SIGINT SIGTERM
 trap 'trap_err ${?} ${LINENO} ${BASH_LINENO} ${BASH_COMMAND} $(printf "::%s" ${FUNCNAME[@]:-})' ERR
 
 ## Variables
@@ -17,7 +17,7 @@ needed_commands=("oc" "envsubst")
 needed_vars=("IIB_ID" "QUAY_USER" "GITOPS_VERSION")
 ###################################################
 
-##RUN
+## RUN
 log_info "Checking dependencies"
 check_dependencies "${needed_commands[@]}" || exit_on_err 1 "Dependencies not met"
 log_info "Checking variables"
