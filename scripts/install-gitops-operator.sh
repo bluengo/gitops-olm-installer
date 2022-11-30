@@ -25,20 +25,20 @@ check_variables "${needed_vars[@]}" || exit_on_err 2 "Please, provide the requir
 
 # Print information
 log_ok "All variables are present:"
-log_info "IIB_ID=${IIB_ID}"
-log_info "QUAY_USER=${QUAY_USER}"
-log_info "GITOPS_VERSION=${GITOPS_VERSION}"
+log_info "${BBLU}IIB_ID${RST}=${YLW}${IIB_ID}${RST}"
+log_info "${BBLU}QUAY_USER${RST}=${YLW}${QUAY_USER}${RST}"
+log_info "${BBLU}GITOPS_VERSION${RST}=${YLW}${GITOPS_VERSION}${RST}"
 
 # ImageContentSourcePolicy:
 # ·························
 # Since the regular RedHat registry is not available, we
 # create this object to make the cluster look into brew
 # registry instead
-log_info "Installing ImageContentSourcePolicy 'brew-registry'"
+log_info "Installing ImageContentSourcePolicy ${ITL}'brew-registry'${RST}"
 {
   envsubst < "manifests/01-ImageContentSourcePolicy.yaml" | oc apply -f - &&\
-  log_ok "ImageContentSourcePolicy created successfully";
-} || {
+  log_ok "${BLD}ImageContentSourcePolicy${RST} has been created";
+  } || {
   exit_on_err 3 "Unable to create ImageContentSourcePolicy to point brew registry"
 }
 
@@ -47,11 +47,11 @@ log_info "Installing ImageContentSourcePolicy 'brew-registry'"
 # The catalogsource object provides an alternative source
 # to install operators, in this case, instead of using
 # the marketplace, we add operators from a custom IIB.
-log_info "Installing CatalogSource 'iib-${QUAY_USER}' with IIB 'quay.io/${QUAY_USER}/iib:${IIB_ID}'"
+log_info "Installing CatalogSource ${ITL}'iib-${QUAY_USER}'${RST}"
 {
   envsubst < "manifests/02-CatalogSource.yaml" | oc apply -f - &&\
-  log_ok "CatalogSource created successfully";
-} || {
+  log_ok "${BLD}CatalogSource${RST} has been created";
+  } || {
   exit_on_err 4 "Unable to create CatalogSource for IIB ${IIB_ID}"
 }
 
@@ -60,12 +60,14 @@ log_info "Installing CatalogSource 'iib-${QUAY_USER}' with IIB 'quay.io/${QUAY_U
 # Last step is to create a subscription within the above
 # catalog source to install GitOps operator from the 
 # channel specified by $GITOPS_VERSION.
-log_info "Installing Subscription 'openshift-gitops-operator' to the CatalogSource"
-log_info "Channel: gitops-${GITOPS_VERSION}"
+log_info "Installing Subscription ${ITL}'openshift-gitops-operator'${RST} to the CatalogSource"
+log_info "Channel: ${BLD}gitops-${GITOPS_VERSION}${RST}"
 {
   envsubst < "manifests/03-Subscription.yaml" | oc apply -f - &&\
-  log_ok "Subscription created successfully";
-} || {
-  exit_on_err 5 "Unable to create Subscription 'openshift-gitops-operator'"
+  log_ok "${BLD}Subscription${RST} has been created";
+  } || {
+  exit_on_err 5 "Unable to create Subscription ${ITL}'openshift-gitops-operator'${RST}"
 }
+
+log_ok "${BLD}GitOps operator installed${RST} ${BGRN}successfully${RST}"
 
