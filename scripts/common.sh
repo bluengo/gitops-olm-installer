@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 
 ## COLOR and FORMATTING
-declare -r RED='\e[91m' # Red color
-declare -r GRN='\e[92m' # Green color
-declare -r BLU='\e[94m' # Blue color
-declare -r YLW='\e[93m' # Yellow color
-declare -r BLD='\e[1m'  # Bold
-declare -r ITL='\e[3m'  # Italic
-declare -r RST='\e[0m'  # Reset format
+declare -r RED='\033[0;91m'  # Red color
+declare -r GRN='\033[0;92m'  # Green color
+declare -r YLW='\033[0;93m'  # Yellow color
+declare -r BLU='\033[0;94m'  # Blue color
+declare -r BLD='\033[1;97m'  # Bold White color
+declare -r BRED='\033[1;91m' # Bold Red color
+declare -r BGRN='\033[1;92m' # Bold Green color
+declare -r BYLW='\033[1;93m' # Bold Yellow color
+declare -r BBLU='\033[1;94m' # Bold Blue color
+declare -r ITL='\033[3m'     # Italic
+declare -r RST='\033[0m'     # Reset format
 
 ## LOGGING.
 timestamp()
