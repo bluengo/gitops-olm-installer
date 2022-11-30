@@ -14,6 +14,8 @@ trap 'trap_err ${?} ${LINENO} ${BASH_LINENO} ${BASH_COMMAND} $(printf "::%s" ${F
 
 ## Variables
 needed_commands=("podman")
+src_registry="registry-proxy.engineering.redhat.com/rh-osbs"
+dst_registry="quay.io/${QUAY_USER}"
 ###################################################
 
 ## RUN
@@ -21,10 +23,28 @@ log_info "Checking dependencies"
 check_dependencies "${needed_commands[@]}" || exit_on_err 1 "Dependencies not met"
 
 log_info "Mirroring IIB ${IIB_ID} image to Quay.io"
-podman pull "registry-proxy.engineering.redhat.com/rh-osbs/iib:${IIB_ID}"
-podman tag "registry-proxy.engineering.redhat.com/rh-osbs/iib:${IIB_ID}" "quay.io/${QUAY_USER}/iib:${IIB_ID}"
-podman push "quay.io/${QUAY_USER}/iib:${IIB_ID}"
-log_ok "Image 'quay.io/${QUAY_USER}/iib:${IIB_ID}' is ready"
 
-## TODO
+log_info "Pulling image ${src_registry}/iib:${IIB_ID}..."
+{
+  podman pull "${src_registry}/iib:${IIB_ID}" &&\
+  log_ok "Image ${src_registry}/iib:${IIB_ID} pulled successfully"
+  } || {
+  exit_on_err 2 "Unable to pull image ${src_registry}/iib:${IIB_ID}"
+}
+
+log_info "Tagging image to ${dst_registry}/iib:${IIB_ID}"
+{
+  podman tag "${src_registry}/iib:${IIB_ID}" "${dst_registry}/iib:${IIB_ID}" &&\
+  log_ok "Successfully tagged IIB image"
+  } || {
+  exit_on_err 3 "Error when trying to tag image ${src_registry}/iib:${IIB_ID}"
+}
+
+log_info "Pushing ${dst_registry}/iib:${IIB_ID} to registry..."
+{
+  podman push "${dst_registry}/iib:${IIB_ID}" &&\
+  log_ok "Image ${dst_registry}/iib:${IIB_ID} is pushed and ready"
+} || {
+  exit_on_err 4 "Unable to push image quay.io/${QUAY_USER}/iib:${IIB_ID}"
+}
 
