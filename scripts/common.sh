@@ -3,7 +3,7 @@
 ## COLOR and FORMATTING
 declare -r RED='\e[91m' # Red color
 declare -r GRN='\e[92m' # Green color
-declare -r BLU='\e[96m' # Blue color
+declare -r BLU='\e[94m' # Blue color
 declare -r YLW='\e[93m' # Yellow color
 declare -r BLD='\e[1m'  # Bold
 declare -r ITL='\e[3m'  # Italic
