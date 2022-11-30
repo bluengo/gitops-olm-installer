@@ -68,3 +68,4 @@ log_info "Channel: gitops-${GITOPS_VERSION}"
 } || {
   exit_on_err 5 "Unable to create Subscription 'openshift-gitops-operator'"
 }
+
