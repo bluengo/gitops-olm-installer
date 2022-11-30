@@ -23,6 +23,7 @@ log_info "Checking dependencies"
 check_dependencies "${needed_commands[@]}" || exit_on_err 1 "Dependencies not met"
 
 # Check or Ask for Podman credentials.
+log_info "Checking current podman credentials for Brew registry"
 {
   podman login --get-login brew.registry.redhat.io &&\
   log_ok "Already logged in Brew registry"
@@ -35,8 +36,9 @@ check_dependencies "${needed_commands[@]}" || exit_on_err 1 "Dependencies not me
 }
 
 ## Add Brew credentials to OCP:
-{ # 1. Get current information
-  log_info "Getting current login information from the cluster secret"
+# 1. Get current information
+log_info "Getting current login information from the cluster secret"
+{
   oc get secrets pull-secret \
     -n openshift-config \
     -o template='{{index .data ".dockerconfigjson"}}' \
@@ -45,8 +47,9 @@ check_dependencies "${needed_commands[@]}" || exit_on_err 1 "Dependencies not me
   exit_on_err 3 "Unable to gather current login information from OCP cluster"
 }
 
-{ # 2. Get Brew registry credentials
-  log_info "Copying brew credentials from your config.json file"
+# 2. Get Brew registry credentials
+log_info "Copying brew credentials from your config.json file"
+{
   brew_secret=$(jq '.auths."brew.registry.redhat.io".auth' \
                       "${HOME}/.docker/config.json" \
                       | tr -d '"')
@@ -54,8 +57,9 @@ check_dependencies "${needed_commands[@]}" || exit_on_err 1 "Dependencies not me
   exit_on_err 4 "Something went wrong when trying to get your Brew login info"
 }                    
 
-{ # 3. Append the key:value to the JSON file
-  log_info "Appending login information into the JSON document"
+# 3. Append the key:value to the JSON file
+log_info "Appending login information into the JSON document"
+{
   jq --arg secret "${brew_secret}" \
     '.auths |= . + {"brew.registry.redhat.io":{"auth":$secret}}' \
     "${oldauth}" > "${newauth}"
@@ -63,8 +67,9 @@ check_dependencies "${needed_commands[@]}" || exit_on_err 1 "Dependencies not me
   exit_on_err 5 "Error when updating the JSON document with the Brew login info"
 }
 
-{ # 4. Update the pull-secret information in OCP
-  log_info "Pushing the updated information back to the secret"
+# 4. Update the pull-secret information in OCP
+log_info "Pushing the updated information back to the secret"
+{
   oc set data secret pull-secret \
     -n openshift-config \
     --from-file=.dockerconfigjson="${newauth}"
