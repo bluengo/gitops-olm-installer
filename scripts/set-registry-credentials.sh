@@ -29,11 +29,11 @@ log_info "Checking current podman credentials for Brew registry"
 {
   podman login --get-login brew.registry.redhat.io &&\
   log_ok "Already logged in Brew registry"
-} || {
+  } || {
   log_warn "No login information found for Brew registry"
   log_info "Trying to login now:\n"
   podman login brew.registry.redhat.io
-} || {
+  } || {
   exit_on_err 2 "Unable to get Brew registry credentials"
 }
 
@@ -45,7 +45,7 @@ log_info "Getting current login information from the cluster secret"
     -n openshift-config \
     -o template='{{index .data ".dockerconfigjson"}}' \
     | base64 -d > "${oldauth}"
-} || {
+  } || {
   exit_on_err 3 "Unable to gather current login information from OCP cluster"
 }
 
@@ -55,7 +55,7 @@ log_info "Copying brew credentials from your config.json file"
   brew_secret=$(jq '.auths."brew.registry.redhat.io".auth' \
                       "${docker_config}" \
                       | tr -d '"')
-} || {
+  } || {
   exit_on_err 4 "Something went wrong when trying to get your Brew login info"
 }                    
 
@@ -65,7 +65,7 @@ log_info "Appending login information into the JSON document"
   jq --arg secret "${brew_secret}" \
     '.auths |= . + {"brew.registry.redhat.io":{"auth":$secret}}' \
     "${oldauth}" > "${newauth}"
-} || {
+  } || {
   exit_on_err 5 "Error when updating the JSON document with the Brew login info"
 }
 
@@ -75,7 +75,7 @@ log_info "Pushing the updated information back to the secret"
   oc set data secret pull-secret \
     -n openshift-config \
     --from-file=.dockerconfigjson="${newauth}"
-} || {
+  } || {
   exit_on_err 6 "An error ocurred trying to update registry information in the cluster"
 } 
 
