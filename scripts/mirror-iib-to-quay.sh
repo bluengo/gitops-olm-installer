@@ -25,7 +25,7 @@ check_dependencies "${needed_commands[@]}" || exit_on_err 1 "Dependencies not me
 log_info "Checking variables"
 check_variables "${needed_vars[@]}" || exit_on_err 2 "Please, provide the required variables"
 
-log_info "Mirroring IIB ${IIB_ID} image to Quay.io"
+log_info "Mirroring IIB ${BLD}${IIB_ID}${RST} image to Quay.io"
 
 # 1. Pull image
 log_info "Pulling image ${src_registry}/iib:${IIB_ID}..."
@@ -49,8 +49,10 @@ log_info "Tagging image to ${dst_registry}/iib:${IIB_ID}"
 log_info "Pushing ${dst_registry}/iib:${IIB_ID} to registry..."
 {
   podman push "${dst_registry}/iib:${IIB_ID}" &&\
-  log_ok "Image ${dst_registry}/iib:${IIB_ID} is pushed and ready"
-} || {
+  log_ok "Image ${dst_registry}/iib:${IIB_ID} pushed successfully"
+  } || {
   exit_on_err 4 "Unable to push image quay.io/${QUAY_USER}/iib:${IIB_ID}"
 }
+
+log_ok "The IIB ${BLD}${dst_registry}/iib:${IIB_ID}${RST} is ready to be used"
 
