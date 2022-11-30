@@ -11,7 +11,7 @@ declare -r RST='\e[0m'  # Reset format
 ## LOGGING.
 timestamp()
 {
-    date --utc '+%Y-%m-%d %H:%M:%S UTC - '
+  date --utc '+%Y-%m-%d %H:%M:%S UTC - '
 }
 
 # Create a temporary log file if not set.
@@ -19,33 +19,33 @@ LOGFILE=${LOGFILE:-$(mktemp)}
 
 log_ok()
 {
-    # Prints the timestamp with a green [OK] followed by the message ($1)
-    echo -e "$(timestamp)${GRN}[OK]:${RST} ${1}" | tee -a "${LOGFILE}"
+  # Prints the timestamp with a green [OK] followed by the message ($1)
+  echo -e "$(timestamp)${GRN}[OK]:${RST} ${1}" | tee -a "${LOGFILE}"
 }
 
 log_info() {
-    # Prints the timestamp with [INFO] followed by the message ($1)
-    echo -e "$(timestamp)[INFO]: ${1}" | tee -a "${LOGFILE}"
+  # Prints the timestamp with [INFO] followed by the message ($1)
+  echo -e "$(timestamp)[INFO]: ${1}" | tee -a "${LOGFILE}"
 }
 
 log_warn()
 {
-    # Prints the timestamp with a yellow [WARNING] followed by the message ($1)
-    echo -e "$(timestamp)${YLW}[WARNING]:${RST} ${1}" | tee -a "${LOGFILE}"
+  # Prints the timestamp with a yellow [WARNING] followed by the message ($1)
+  echo -e "$(timestamp)${YLW}[WARNING]:${RST} ${1}" | tee -a "${LOGFILE}"
 }
 
 log_err()
 {
-    # Prints the timestamp with a red [ERROR] followed by the message ($1)
-    echo -e "$(timestamp)${RED}[ERROR]:${RST} ${1}" | tee -a "${LOGFILE}"
+  # Prints the timestamp with a red [ERROR] followed by the message ($1)
+  echo -e "$(timestamp)${RED}[ERROR]:${RST} ${1}" | tee -a "${LOGFILE}"
 }
 
 exit_on_err()
 {
-    # Prints the message ($2) as an error and exits with status ($1)
-    log_err "${2}"
-    echo -e "$(timestamp)${YLW}[EXIT]: Stopping execution now...${RST}"
-    exit "${1}"
+  # Prints the message ($2) as an error and exits with status ($1)
+  log_err "${2}"
+  echo -e "$(timestamp)${YLW}[EXIT]: Stopping execution now...${RST}"
+  exit "${1}"
 }
 
 ## Check required parameters (ENV VARS).
