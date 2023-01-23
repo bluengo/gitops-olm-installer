@@ -29,6 +29,15 @@ log_info "${BBLU}IIB_ID${RST}=${YLW}${IIB_ID}${RST}"
 log_info "${BBLU}QUAY_USER${RST}=${YLW}${QUAY_USER}${RST}"
 log_info "${BBLU}GITOPS_VERSION${RST}=${YLW}${GITOPS_VERSION}${RST}"
 
+# Disable all default sources:
+log_info "Patching cluster config to disable default sources"
+{
+  oc patch operatorhub.config.openshift.io/cluster -p='{"spec":{"disableAllDefaultSources":true}}' --type=merge &&\
+  log_ok "Config patched successfully";
+} || {
+  exit_on_err 6 "Error when patching 'operatorhub.config.openshift.io/cluster' object"
+}
+
 # ImageContentSourcePolicy:
 # ·························
 # Since the regular RedHat registry is not available, we
