@@ -17,7 +17,7 @@ needed_commands=("oc" "podman" "jq" "tr")
 TMPDIR=$(mktemp -d)
 oldauth=$(mktemp -p "${TMPDIR}")
 newauth=$(mktemp -p "${TMPDIR}")
-docker_config="${DOCKER_CONFIG:-${HOME}/.docker/config.json}"
+auth_json="${DOCKER_CONFIG:-${XDG_RUNTIME_DIR}/containers/auth.json}"
 #########################################
 
 ## RUN
@@ -53,7 +53,7 @@ log_info "Getting current login information from the cluster secret"
 log_info "Copying brew credentials from your config.json file"
 {
   brew_secret=$(jq '.auths."brew.registry.redhat.io".auth' \
-                      "${docker_config}" \
+                      "${auth_json}" \
                       | tr -d '"')
   } || {
   exit_on_err 4 "Something went wrong when trying to get your Brew login info"
