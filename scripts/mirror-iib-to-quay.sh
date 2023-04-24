@@ -17,6 +17,17 @@ needed_commands=("podman")
 needed_vars=("IIB_ID" "QUAY_USER")
 src_registry="registry-proxy.engineering.redhat.com/rh-osbs"
 dst_registry="quay.io/${QUAY_USER}"
+
+## Functions
+registry_login() {
+  {
+    podman login --get-login "${1}"
+  } || {
+    log_warn "Credentials missing for registry ${1}"
+    log_info "Trying to login now..."
+    podman login "${1}"
+  }
+}
 ###################################################
 
 ## RUN
@@ -29,6 +40,7 @@ log_info "Mirroring IIB ${BLD}${IIB_ID}${RST} image to Quay.io"
 
 # 1. Pull image
 log_info "Pulling image ${src_registry}/iib:${IIB_ID}..."
+registry_login "${src_registry}"
 {
   podman pull "${src_registry}/iib:${IIB_ID}" &&\
   log_ok "Image ${src_registry}/iib:${IIB_ID} pulled successfully"
@@ -47,7 +59,10 @@ log_info "Tagging image to ${dst_registry}/iib:${IIB_ID}"
 
 # 3. Push image
 log_info "Pushing ${dst_registry}/iib:${IIB_ID} to registry..."
+registry_login "${dst_registry}"
 {
+  podman login --get-login "${dst_registry}" > /dev/null 2&>1 \
+  || podman login "${dst_registry}"
   podman push "${dst_registry}/iib:${IIB_ID}" &&\
   log_ok "Image ${dst_registry}/iib:${IIB_ID} pushed successfully"
   } || {
