@@ -15,6 +15,9 @@ trap 'trap_err ${?} ${LINENO} ${BASH_LINENO} ${BASH_COMMAND} $(printf "::%s" ${F
 ## Variables
 needed_commands=("oc" "envsubst")
 needed_vars=("IIB_ID" "QUAY_USER" "GITOPS_VERSION")
+if [[ -n "${GITOPS_VERSION}" ]]; then
+  CHANNEL="gitops-${GITOPS_VERSION}"
+fi
 ###################################################
 
 ## RUN
@@ -70,7 +73,7 @@ log_info "Installing CatalogSource ${ITL}'iib-${QUAY_USER}'${RST}"
 # catalog source to install GitOps operator from the 
 # channel specified by $GITOPS_VERSION.
 log_info "Installing Subscription ${ITL}'openshift-gitops-operator'${RST} to the CatalogSource"
-log_info "Channel: ${BLD}gitops-${GITOPS_VERSION}${RST}"
+log_info "Channel: ${BLD}${CHANNEL}${RST}"
 {
   envsubst < "manifests/03-Subscription.yaml" | oc apply -f - &&\
   log_ok "${BLD}Subscription${RST} has been created";

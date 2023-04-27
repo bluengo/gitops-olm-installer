@@ -1,6 +1,7 @@
 SHELL := /bin/bash
 LOGFMT := "$(shell date --utc '+%Y-%m-%d--%H-%M-%S').log"
 LOGFILE ?= "$(shell mktemp -d)/$(LOGFMT)"
+CHANNEL ?= "latest"
 
 RED =\e[91m#  Red color
 GRN =\e[92m#  Green color
@@ -41,7 +42,7 @@ ifndef QUAY_USER
 	$(error ERROR: You need to provide the QUAY_USER)
 endif
 ifndef GITOPS_VERSION
-	$(error ERROR: You need to provide the GITOPS_VERSION)
+	@echo "No GITOPS_VERSION was provided, so installing 'latest' operator"
 endif
 	@. scripts/install-gitops-operator.sh | tee -a $(LOGFILE)
 
