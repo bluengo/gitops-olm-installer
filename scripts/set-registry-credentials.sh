@@ -16,27 +16,12 @@ trap 'trap_err ${?} ${LINENO} ${BASH_LINENO} ${BASH_COMMAND} $(printf "::%s" ${F
 
 ## Variables
 needed_commands=("oc" "podman" "base64")
-#TMPDIR=$(mktemp -d)
 authfile=$(mktemp)
-#auth_json="${DOCKER_CONFIG:-${XDG_RUNTIME_DIR}/containers/auth.json}"
 #########################################
 
 ## RUN
 log_info "Checking dependencies"
 check_dependencies "${needed_commands[@]}" || exit_on_err 1 "Dependencies not met"
-
-# Check or Ask for Podman credentials.
-#log_info "Checking current podman credentials for Brew registry"
-#{
-#  podman login --get-login brew.registry.redhat.io &&\
-#  log_ok "Already logged in Brew registry"
-#  } || {
-#  log_warn "No login information found for Brew registry"
-#  log_info "Trying to login now:\n"
-#  podman login brew.registry.redhat.io
-#  } || {
-#  exit_on_err 2 "Unable to get Brew registry credentials"
-#}
 
 ## Add Brew credentials to OCP:
 # 1. Get current information
@@ -53,22 +38,13 @@ log_info "Getting current login information from the cluster secret"
 # 2. Get Brew registry credentials
 log_info "Updating authfile with your brew credentials"
 {
-  podman login --authfile "${authfile}" brew.registry.redhat.io
+  podman login --get-login brew.registry.redhat.io > /dev/null \&&
+  podman login --authfile="${authfile}" brew.registry.redhat.io
   } || {
   exit_on_err 3 "Something went wrong when trying to get your Brew login info"
 }                    
 
-# 3. Append the key:value to the JSON file
-#log_info "Appending login information into the JSON document"
-#{
-#  jq --arg secret "${brew_secret}" \
-#    '.auths |= . + {"brew.registry.redhat.io":{"auth":$secret}}' \
-#    "${oldauth}" > "${newauth}"
-#  } || {
-#  exit_on_err 5 "Error when updating the JSON document with the Brew login info"
-#}
-
-# 4. Update the pull-secret information in OCP
+# 3. Update the pull-secret information in OCP
 log_info "Pushing the updated information back to the secret"
 {
   oc set data secret pull-secret \
@@ -79,4 +55,3 @@ log_info "Pushing the updated information back to the secret"
 } 
 
 log_ok "Your brew registry access token has been added to the cluster"
-
