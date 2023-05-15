@@ -7,6 +7,6 @@ spec:
   channel: ${CHANNEL}
   installPlanApproval: Automatic
   name: openshift-gitops-operator
-  source: iib-${QUAY_USER}
+  source: ${CATALOG_SOURCE}
   sourceNamespace: openshift-marketplace
 
