@@ -15,8 +15,21 @@ trap 'trap_err ${?} ${LINENO} ${BASH_LINENO} ${BASH_COMMAND} $(printf "::%s" ${F
 ## Variables
 needed_commands=("podman")
 needed_vars=("IIB_ID" "QUAY_USER")
-src_registry="registry-proxy.engineering.redhat.com/rh-osbs"
+src_registry="brew.registry.redhat.io/rh-osbs"
 dst_registry="quay.io/${QUAY_USER}"
+
+## Functions
+registry_login() {
+  {
+    podman login --get-login "${1}" > /dev/null
+  } || {
+    log_warn "Credentials missing for registry ${1}"
+    log_info "Trying to login now..."
+    podman login "${1}"
+  } || {
+    exit_on_err 3 "Unable to login with podman against ${1}"
+  }
+}
 ###################################################
 
 ## RUN
@@ -29,11 +42,12 @@ log_info "Mirroring IIB ${BLD}${IIB_ID}${RST} image to Quay.io"
 
 # 1. Pull image
 log_info "Pulling image ${src_registry}/iib:${IIB_ID}..."
+registry_login "${src_registry}"
 {
   podman pull "${src_registry}/iib:${IIB_ID}" &&\
   log_ok "Image ${src_registry}/iib:${IIB_ID} pulled successfully"
   } || {
-  exit_on_err 2 "Unable to pull image ${src_registry}/iib:${IIB_ID}"
+  exit_on_err 4 "Unable to pull image ${src_registry}/iib:${IIB_ID}"
 }
 
 # 2. Tag image
@@ -42,16 +56,17 @@ log_info "Tagging image to ${dst_registry}/iib:${IIB_ID}"
   podman tag "${src_registry}/iib:${IIB_ID}" "${dst_registry}/iib:${IIB_ID}" &&\
   log_ok "Successfully tagged IIB image"
   } || {
-  exit_on_err 3 "Error when trying to tag image ${src_registry}/iib:${IIB_ID}"
+  exit_on_err 5 "Error when trying to tag image ${src_registry}/iib:${IIB_ID}"
 }
 
 # 3. Push image
 log_info "Pushing ${dst_registry}/iib:${IIB_ID} to registry..."
+registry_login "${dst_registry}"
 {
   podman push "${dst_registry}/iib:${IIB_ID}" &&\
   log_ok "Image ${dst_registry}/iib:${IIB_ID} pushed successfully"
   } || {
-  exit_on_err 4 "Unable to push image quay.io/${QUAY_USER}/iib:${IIB_ID}"
+  exit_on_err 6 "Unable to push image quay.io/${QUAY_USER}/iib:${IIB_ID}"
 }
 
 log_ok "The IIB ${BLD}${dst_registry}/iib:${IIB_ID}${RST} is ready to be used"
