@@ -1,7 +1,6 @@
 SHELL := /bin/bash
-LOGFMT := "$(shell date --utc '+%Y-%m-%d--%H-%M-%S').log"
-LOGFILE ?= "$(shell mktemp -d)/$(LOGFMT)"
-CHANNEL ?= "latest"
+LOGFMT := $(shell date --utc '+%Y-%m-%d--%H-%M-%S').log
+LOGFILE ?= $(shell mktemp -d)/$(LOGFMT)
 
 RED =\e[91m#  Red color
 GRN =\e[92m#  Green color
@@ -36,7 +35,7 @@ help:
 # Install GitOps operator using OLM.
 install-operator:
 ifndef IIB_ID
-	$(error ERROR: You need to provide the IIB_ID)
+	@echo "No IIB_ID was provided, so installing from 'redhat-operators' CatalogSource"
 endif
 ifndef QUAY_USER
 	$(error ERROR: You need to provide the QUAY_USER)
