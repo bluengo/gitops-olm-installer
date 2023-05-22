@@ -79,10 +79,10 @@ check_dependencies "${needed_commands[@]}" || exit_on_err 1 "Dependencies not me
 if [[ -z "${IIB_ID}" ]]; then
   if [[ -z "${GITOPS_VERSION}" ]]; then
     export CHANNEL="latest"
-    export CATALOG_SOURCE="redhat-marketplace"
+    export CATALOG_SOURCE="redhat-operators"
   elif [[ -n "${GITOPS_VERSION}" ]]; then
     export CHANNEL="gitops-${GITOPS_VERSION}"
-    export CATALOG_SOURCE="redhat-marketplace"
+    export CATALOG_SOURCE="redhat-operators"
   fi
 elif [[ -n "${IIB_ID}" ]]; then
   if [[ -n "${GITOPS_VERSION}" ]]; then
