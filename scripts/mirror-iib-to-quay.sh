@@ -66,6 +66,12 @@ registry_login "${dst_registry}"
   podman push "${dst_registry}/iib:${IIB_ID}" &&\
   log_ok "Image ${dst_registry}/iib:${IIB_ID} pushed successfully"
   } || {
+  # If the system has docker credentials configured, sometimes podman
+  # fails pushing the image. Login out with Docker works:
+  docker logout "${dst_registry}" &&\
+  registry_login "${dst_registry}" &&\
+  podman push "${dst_registry}/iib:${IIB_ID}"
+  } || {
   exit_on_err 6 "Unable to push image quay.io/${QUAY_USER}/iib:${IIB_ID}"
 }
 
